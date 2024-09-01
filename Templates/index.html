@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document AI Processor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h1>Upload Document for Processing</h1>
+<form method="post" enctype="multipart/form-data">
+    <label for="service_type">Select Service Type:</label>
+    <select name="service_type" id="service_type" onchange="updateProcessorOptions()">
+        <option value="google">Google Document AI</option>
+        <option value="azure">Azure Form Recognizer</option>
+    </select>
+
+    <label for="processor_type">Select Processor Type:</label>
+    <select name="processor_type" id="processor_type">
+        <!-- Options will be populated based on the selected service -->
+    </select>
+
+    <label for="document_file">Choose Document:</label>
+    <input type="file" name="document_file" required>
+
+    <input type="submit" value="Process Document">
+</form>
+
+<script>
+    const googleProcessors = {
+        "Promissory Note": "e957ec7b260b45b",
+        "Closing Instruction": "cde9d690362249cd",
+        "Deed of Trust": "2261b6904371ab95",
+        "Loan Documentation Request": "97834aae8d63d7fa"
+    };
+
+    const azureProcessors = {
+        "Promissory Note": "promissory_note",
+        "Closing Instruction": "Closing_Instruction",
+        "Deed of Trust": "Deed_of_Trust",
+        "Loan Documentation Request": "Loan_Documentation_Request"
+    };
+
+    function updateProcessorOptions() {
+        const serviceType = document.getElementById('service_type').value;
+        const processorTypeSelect = document.getElementById('processor_type');
+        processorTypeSelect.innerHTML = '';  // Clear previous options
+
+        let processors = serviceType === 'google' ? googleProcessors : azureProcessors;
+
+        for (const [name, id] of Object.entries(processors)) {
+            const option = document.createElement('option');
+            option.value = id;
+            option.text = name;
+            processorTypeSelect.appendChild(option);
+        }
+    }
+
+    // Initialize options on page load
+    updateProcessorOptions();
+</script>
+
+</body>
+</html>
