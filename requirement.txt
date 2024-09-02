@@ -1,0 +1,4 @@
+Flask
+google-cloud-documentai
+google-auth
+google-api-core
