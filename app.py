@@ -38,7 +38,20 @@ azure_models = {
         "endpoint": "https://eastus.api.cognitive.microsoft.com/",
         "key": "cd9c6ef505184658a367313ab9726fe0",
         "model_id": "Loan_Documentation_Request"
+    },
+
+    "commercial_invoice": {
+        "endpoint":"https://commercial-invoice.cognitiveservices.azure.com/",
+        "key":"219d227fd8e3429baa514510ccdadf73",
+        "model_id":"commerical-invoice2"
+    },
+
+    "bill_of_lading": {
+        "endpoint":"https://commercial-invoice.cognitiveservices.azure.com/",
+        "key":"3a8a66e6525c45289947cea953e5017f",
+        "model_id":"bill_of_lading"
     }
+
 }
 
 
@@ -58,8 +71,12 @@ def process_document_google(file_content, processor_id, mime_type):
         result = client.process_document(request=request_obj)
         document = result.document
 
+        #entities = [(entity.type_, entity.mention_text) for entity in document.entities]
+
         entities = [(entity.type_, entity.mention_text) for entity in document.entities]
+        entities.sort(key=lambda x: x[0])  # Sort by type (first element of the tuple)
         return entities
+
     except GoogleAPIError as e:
         logging.error(f"An error occurred: {e}")
         return [("Error", str(e))]
@@ -83,6 +100,7 @@ def process_document_azure(file_path, model_info):
             if field.value_type:  # Only include labeled fields
                 field_value = field.value if field.value else field.content
                 extracted_data.append((name, field_value))
+    extracted_data.sort(key=lambda x: x[0])
     return extracted_data
 
 @app.route('/', methods=['GET', 'POST'])
@@ -109,6 +127,8 @@ def index():
             else:
                 model_info = azure_models.get(processor_id)
                 entities = process_document_azure(file_path, model_info)
+
+            entities.sort(key=lambda x: x[0])
 
             file_url = f"/uploads/{document_file.filename}"
             return render_template('results.html', entities=entities, file_url=file_url)
