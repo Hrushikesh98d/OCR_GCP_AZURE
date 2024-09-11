@@ -1,13 +1,12 @@
 from flask import Flask, render_template, request, send_from_directory
 from google.oauth2 import service_account
 from google.cloud import documentai
-from azure.core.credentials import AzureKeyCredential
-from azure.ai.formrecognizer import DocumentAnalysisClient
 from google.api_core.client_options import ClientOptions
 from google.api_core.exceptions import GoogleAPIError
+from azure.core.credentials import AzureKeyCredential
+from azure.ai.formrecognizer import DocumentAnalysisClient
 
 import os
-# os.environ['GOOGLE_APPLICATION_CREDENTIALS'] =
 import mimetypes
 import logging
 
@@ -17,7 +16,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 logging.basicConfig(level=logging.INFO)
 
-# Define Azure Form Recognizer details
+# Azure models configuration
 azure_models = {
     "promissory_note": {
         "endpoint": "https://eastus.api.cognitive.microsoft.com/",
@@ -60,8 +59,7 @@ def process_document_google(file_content, processor_id, mime_type):
     location = "us"
 
     try:
-        credentials = service_account.Credentials.from_service_account_file("/Users/Hrushikesh/Desktop/Trade_Sun_Project/Clone/OCR_GCP_AZURE/service-account-key.json"
-        )
+        credentials = service_account.Credentials.from_service_account_file("/Users/Hrushikesh/Desktop/Trade_Sun_Project/Clone/OCR_GCP_AZURE/service-account-key.json")
         opts = ClientOptions(api_endpoint=f"{location}-documentai.googleapis.com")
         client = documentai.DocumentProcessorServiceClient(client_options=opts, credentials=credentials)
         name = client.processor_path(project_id, location, processor_id)
@@ -71,15 +69,28 @@ def process_document_google(file_content, processor_id, mime_type):
         result = client.process_document(request=request_obj)
         document = result.document
 
-        #entities = [(entity.type_, entity.mention_text) for entity in document.entities]
-
-        entities = [(entity.type_, entity.mention_text) for entity in document.entities]
-        entities.sort(key=lambda x: x[0])  # Sort by type (first element of the tuple)
+        entities = []
+        for entity in document.entities:
+            bounding_polys = []
+            for page_ref in entity.page_anchor.page_refs:
+                bounding_poly = page_ref.bounding_poly  # Use bounding_poly, not bounding_polys
+                if bounding_poly:
+                    bounding_polys.append({
+                        "left": bounding_poly.normalized_vertices[0].x,
+                        "top": bounding_poly.normalized_vertices[0].y,
+                        "right": bounding_poly.normalized_vertices[2].x,
+                        "bottom": bounding_poly.normalized_vertices[2].y,
+                    })
+            entities.append({
+                "type": entity.type_,
+                "mention_text": entity.mention_text,
+                "bounding_boxes": bounding_polys
+            })
         return entities
 
     except GoogleAPIError as e:
         logging.error(f"An error occurred: {e}")
-        return [("Error", str(e))]
+        return [{"Error": str(e)}]
 
 def process_document_azure(file_path, model_info):
     document_analysis_client = DocumentAnalysisClient(
@@ -103,6 +114,8 @@ def process_document_azure(file_path, model_info):
     extracted_data.sort(key=lambda x: x[0])
     return extracted_data
 
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -124,20 +137,20 @@ def index():
 
             if service_type == 'google':
                 entities = process_document_google(file_content, processor_id, mime_type)
-            else:
+                return render_template('results.html', entities=entities, file_url=f"/uploads/{document_file.filename}")
+            elif service_type == 'azure':
                 model_info = azure_models.get(processor_id)
                 entities = process_document_azure(file_path, model_info)
-
-            entities.sort(key=lambda x: x[0])
-
-            file_url = f"/uploads/{document_file.filename}"
-            return render_template('results.html', entities=entities, file_url=file_url)
+                return render_template('results2.html', entities=entities, file_url=f"/uploads/{document_file.filename}")
 
     return render_template('index.html')
+
+
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):

@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document Processing Results</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
         .container {
             display: flex;
@@ -36,47 +35,137 @@
             background-color: #f2f2f2;
         }
 
-        iframe {
-            width: 100%;
-            height: 600px;
+        .document-container {
+            position: relative;
+        }
+
+        canvas {
+            position: absolute; /* Important for aligning with highlights */
+            top: 0;
+            left: 0;
+        }
+
+        .highlight {
+            position: absolute;
+            border: 2px solid red;
+            background-color: rgba(255, 0, 0, 0.2);
         }
     </style>
+
+    <!-- Include PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
 </head>
 <body>
 
 <h1>Processed Entities</h1>
 <div class="container">
+    <!-- Left side: Display key-value pairs -->
     <div class="results-container">
         <h2>Results</h2>
-        <div class="table-container">
-            <table>
-                <thead>
-                <tr>
-                    <th>Type</th>
-                    <th>Value</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for type_, value in entities %}
-                {% if value is not none %}
-                <tr>
-                    <td>{{ type_ }}</td>
-                    <td>{{ value }}</td>
-                </tr>
-                {% endif %}
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>Type</th>
+                <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+            <tr>
+                <td>{{ entity.type }}</td>
+                <td>{{ entity.mention_text }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
 
-    <div class="document-container">
+    <!-- Right side: Display the document with highlights -->
+    <div class="document-container" id="doc-container">
         <h2>Uploaded Document</h2>
-        <iframe src="{{ file_url }}"></iframe>
+        <canvas id="pdf-render"></canvas>
+
+        <!-- Highlight bounding boxes -->
+        {% for entity in entities %}
+        {% for bbox in entity.bounding_boxes %}
+        <div class="highlight" data-left="{{ bbox.left }}" data-top="{{ bbox.top }}"
+             data-right="{{ bbox.right }}" data-bottom="{{ bbox.bottom }}">
+        </div>
+        {% endfor %}
+        {% endfor %}
     </div>
 </div>
 
 <a href="/">Upload another document</a>
+
+<script>
+    const url = '{{ file_url }}';  // PDF file URL
+
+    let pdfDoc = null,
+        pageNum = 1,
+        canvas = document.getElementById('pdf-render'),
+        ctx = canvas.getContext('2d'),
+        scale = 1.5;
+
+    // Render the page
+    function renderPage(num) {
+        pdfDoc.getPage(num).then(function(page) {
+            const viewport = page.getViewport({ scale: scale });
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            // Render the PDF page
+            const renderCtx = {
+                canvasContext: ctx,
+                viewport: viewport
+            };
+
+            page.render(renderCtx).promise.then(function() {
+                // After rendering the page, adjust the highlights
+                adjustHighlights(canvas.width, canvas.height);
+            });
+        });
+    }
+
+    // Get the document
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+        pdfDoc = pdfDoc_;
+        renderPage(pageNum);
+    });
+
+    // Adjust the highlights after rendering the PDF
+    function adjustHighlights(pdfWidth, pdfHeight) {
+        const highlights = document.getElementsByClassName('highlight');
+        const container = document.getElementById('doc-container');
+
+        // Get actual canvas dimensions for scaling
+        const canvasRect = canvas.getBoundingClientRect();
+
+        Array.from(highlights).forEach(highlight => {
+            const left = parseFloat(highlight.getAttribute('data-left')) * canvasRect.width;
+            const top = parseFloat(highlight.getAttribute('data-top')) * canvasRect.height;
+            const right = parseFloat(highlight.getAttribute('data-right')) * canvasRect.width;
+            const bottom = parseFloat(highlight.getAttribute('data-bottom')) * canvasRect.height;
+
+            highlight.style.left = `${left}px`;
+            highlight.style.top = `${top}px`;
+            highlight.style.width = `${right - left}px`;
+            highlight.style.height = `${bottom - top}px`;
+
+            // Attach highlights to the document container
+            container.appendChild(highlight);
+        });
+    }
+
+    // Handle window resizing
+    window.addEventListener('resize', () => {
+        const container = document.querySelector('.document-container');
+        const containerWidth = container.clientWidth;
+
+        scale = containerWidth / canvas.width;  // Dynamically adjust the scale
+        renderPage(pageNum);  // Re-render the PDF on window resize
+    });
+</script>
 
 </body>
 </html>
