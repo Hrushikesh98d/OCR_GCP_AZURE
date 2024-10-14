@@ -1,0 +1,7 @@
+Flask
+google
+google-cloud-documentai
+google-auth
+google-api-core
+azure
+azure-ai-formrecognizer
