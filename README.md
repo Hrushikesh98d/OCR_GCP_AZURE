@@ -1,4 +1,4 @@
-# Document Extraction Web Application
+# Document Extraction 
 
 ## Author
 **Hrushikesh Dandge**
