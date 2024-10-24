@@ -19,24 +19,24 @@ logging.basicConfig(level=logging.INFO)
 # Azure models configuration
 azure_models = {
     "promissory_note": {
-        "endpoint": "https://eastus.api.cognitive.microsoft.com/",
-        "key": "d0939dff498f473888e3f8ae53bb20d8",
-        "model_id": "promissory_note"  # Ensure model_id is correctly specified here
+        "endpoint": "https://promissorynote.cognitiveservices.azure.com/",
+        "key": "3d7f3244281049f986f0fcbb13655d4b",
+        "model_id": "promissorynote"  # Ensure model_id is correctly specified here
     },
     "Closing_Instruction": {
-        "endpoint": "https://eastus.api.cognitive.microsoft.com/",
-        "key": "5e6778d8f19d40a28acd8053aaa96404",
-        "model_id": "Closing_Instruction"
+        "endpoint": "https://closinginstruction.cognitiveservices.azure.com/",
+        "key": "e4ac7ab296f449a3a2026e1557beaeaf",
+        "model_id": "closingInstruction"
     },
     "Deed_of_Trust": {
-        "endpoint": "https://eastus.api.cognitive.microsoft.com/",
-        "key": "6904b7b57e4543b6aedb6fced68ceea7",
-        "model_id": "Deed_of_Trust"
+        "endpoint": "https://deedoftrust.cognitiveservices.azure.com/",
+        "key": "b40458b766e54b6b99ad3ce44f489727",
+        "model_id": "deedoftrust"
     },
     "Loan_Documentation_Request": {
-        "endpoint": "https://eastus.api.cognitive.microsoft.com/",
-        "key": "cd9c6ef505184658a367313ab9726fe0",
-        "model_id": "Loan_Documentation_Request"
+        "endpoint": "https://loandocumentationrequest.cognitiveservices.azure.com/",
+        "key": "e21150cb732846fdb1c5437b5959924a",
+        "model_id": "loandocumentationrequest"
     },
 
     "commercial_invoice": {
