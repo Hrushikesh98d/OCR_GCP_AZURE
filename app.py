@@ -38,18 +38,20 @@ azure_models = {
         "key": "e21150cb732846fdb1c5437b5959924a",
         "model_id": "loandocumentationrequest"
     },
-
+    
     "commercial_invoice": {
-        "endpoint":"https://commercial-invoice.cognitiveservices.azure.com/",
-        "key":"219d227fd8e3429baa514510ccdadf73",
-        "model_id":"commerical-invoice2"
+        "endpoint":"https://commercialinvoice.cognitiveservices.azure.com/",
+        "key":"46d0d8c7b69d41ca9522b860e85b14d1",
+        "model_id":"commericalinvoice"
     },
 
     "bill_of_lading": {
-        "endpoint":"https://commercial-invoice.cognitiveservices.azure.com/",
-        "key":"3a8a66e6525c45289947cea953e5017f",
-        "model_id":"bill_of_lading"
+        "endpoint":"https://billoflading.cognitiveservices.azure.com/",
+        "key":"c27b0231b9324950b417200a3db45ac3",
+        "model_id":"billoflading"
     }
+
+
 
 }
 
