@@ -5,3 +5,7 @@ google-auth
 google-api-core
 azure
 azure-ai-formrecognizer
+python-dotenv
+oci
+requests
+responses
