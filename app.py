@@ -49,6 +49,11 @@ azure_models = {
         "endpoint":"https://billoflading.cognitiveservices.azure.com/",
         "key":"c27b0231b9324950b417200a3db45ac3",
         "model_id":"billoflading"
+    },
+    "45A": {
+        "endpoint": "https://45a.cognitiveservices.azure.com/",
+        "key": "bb460754073646d2ada133f6b470a5ac",
+        "model_id": "45A_1"  # Ensure model_id is correctly specified here
     }
 
 

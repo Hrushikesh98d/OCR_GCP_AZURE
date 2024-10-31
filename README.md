@@ -13,6 +13,7 @@ This web application enables users to upload PDF documents and extract specific 
 - Loan Documentation Request
 - Bill of Lading
 - Commercial Invoice
+- Letter of credit (45A Field) (Azure)
 
 Both Google and Azure services have been trained to recognize and extract specified data fields from these document types. The extracted information is displayed on the web application interface for easy access and review.
 
