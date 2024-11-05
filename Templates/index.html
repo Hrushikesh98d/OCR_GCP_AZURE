@@ -14,6 +14,7 @@
     <select name="service_type" id="service_type" onchange="updateProcessorOptions()">
         <option value="google">Google Document AI</option>
         <option value="azure">Azure Form Recognizer</option>
+        <option value="oci">OCI Document Understanding</option>
     </select>
 
     <label for="processor_type">Select Processor Type:</label>
@@ -47,12 +48,27 @@
         "Letter of Credit 45A Field":"45A"
     };
 
+    const ociProcessors = {
+        "Promissory Note": "promissory_note",
+        "Closing Instruction": "Closing_Instruction",
+        "Deed of Trust": "Deed_of_Trust"
+    }
+
     function updateProcessorOptions() {
         const serviceType = document.getElementById('service_type').value;
         const processorTypeSelect = document.getElementById('processor_type');
         processorTypeSelect.innerHTML = '';  // Clear previous options
 
-        let processors = serviceType === 'google' ? googleProcessors : azureProcessors;
+        // let processors = serviceType === 'google' ? googleProcessors : azureProcessors;
+        let processors = azureProcessors; 
+
+        if (serviceType === 'oci') {
+            processors = ociProcessors; 
+        }
+
+        if (serviceType === 'google') {
+            processors = googleProcessors; 
+        }
 
         for (const [name, id] of Object.entries(processors)) {
             const option = document.createElement('option');
