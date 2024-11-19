@@ -127,7 +127,7 @@ def format_data_with_openai(extracted_data):
     """
     Use OpenAI Chat API to format and summarize extracted data.
     """
-    openai.api_key = ""
+    openai.api_key = "Enter_api_key"
 
     messages = [
         {
@@ -240,6 +240,10 @@ def index():
                     model_info = azure_models.get(processor_id)
                     entities = process_document_azure(file_path, model_info)
                     return render_template('results2.html', entities=entities, file_url=f"/uploads/{document_file.filename}")
+            elif service_type == 'oci':
+                content = process_with_oci(file_path)
+                return render_template('results_oci.html', content=content, file_url=f"/uploads/{document_file.filename}")
+
     return render_template('index.html')
 
 
