@@ -152,7 +152,7 @@ def index():
                 entities = process_document_azure(file_path, model_info)
                 return render_template('results2.html', entities=entities, file_url=f"/uploads/{document_file.filename}")
             elif service_type == 'oci':
-                content = process_with_oci(file_path)
+                content = process_with_oci(file_path, service_type)
                 return render_template('results_oci.html', content=content, file_url=f"/uploads/{document_file.filename}")
                 
 

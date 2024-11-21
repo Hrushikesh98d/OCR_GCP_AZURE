@@ -1,0 +1,6 @@
+[DEFAULT]
+user=ocid1.user.oc1..aaaaaaaalbowdettfshukxkh5pppu2f5qc56tchul5i4buzwfquqhwz76d6q
+fingerprint=e8:e9:67:9e:0d:e4:e1:eb:b1:83:43:f9:3e:aa:e7:e1
+tenancy=ocid1.tenancy.oc1..aaaaaaaaijbjiap7x7uf27u3jpr6qamm2qtverpdtvqhneyxw6poinyonh7a
+region=us-phoenix-1
+key_file=.oci/pabhiramrishi@gmail.com_2024-10-22T14_32_42.256Z.pem

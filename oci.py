@@ -5,16 +5,22 @@ import responses
 import json
 
 from oci.ai_document import AIServiceDocumentClientCompositeOperations, AIServiceDocumentClient
-from oci.ai_document.models import DocumentTextExtractionFeature, OutputLocation
+from oci.ai_document.models import DocumentTextExtractionFeature, OutputLocation, DocumentKeyValueExtractionFeature
 
 config = oci.config.from_file('.oci/config')
 
 COMPARTMENT_ID = "ocid1.tenancy.oc1..aaaaaaaaijbjiap7x7uf27u3jpr6qamm2qtverpdtvqhneyxw6poinyonh7a"
 
+
+closing_checklist_model_id = "ocid1.aidocumentmodel.oc1.phx.amaaaaaabcseiqaakzvl44czwkgea75n2i5sktxu74s6um3jtt3a4rvxoewq"
+promissory_note_model_id = "ocid1.aidocumentmodel.oc1.phx.amaaaaaabcseiqaangc3hdq7hc42fhgvsvbguhbcuvygtgidli2kfx476ira"
+dot_model_id = "ocid1.aidocumentmodel.oc1.phx.amaaaaaabcseiqaak2ewah77h6wkqzpz3snybsuzjuz2xwq4qe2nb572qyrq"
+
+
 def create_processor_job_callback(times_called, response):
     print("Waiting for processor lifecycle state to go into succeeded state:", response.data)
 
-def process_with_oci(file_path):
+def process_with_oci(file_path, service_type):
     
     text_extraction = None
     with open(file_path, 'rb') as file:
@@ -28,16 +34,27 @@ def process_with_oci(file_path):
     output_location = OutputLocation()
 
     output_location.namespace_name = "axvcnr0z0fj0"
-    output_location.bucket_name = "bucket-20241024-1216"
-    output_location.prefix = "test_on_console"
+    output_location.bucket_name = "tradesun_storage"
+    output_location.prefix = "results"
+
+    this_model_id = ""
+
+    if service_type == "Closing Checklist":
+        this_model_id = closing_checklist_model_id
+    
+    if service_type == "Promissory Note":
+        this_model_id = promissory_note_model_id
+    
+    if service_type == "Deed Of Trust":
+        this_model_id = dot_model_id
 
     create_processor_job_details_text_extraction = oci.ai_document.models.CreateProcessorJobDetails(
                                                     display_name=str(uuid.uuid4()),
                                                     compartment_id=COMPARTMENT_ID,
                                                     input_location=oci.ai_document.models.InlineDocumentContent(data=text_extraction),
                                                     output_location=output_location,
-                                                    processor_config=oci.ai_document.models.GeneralProcessorConfig(features=[text_extraction_feature]))
-    
+                                                    processor_config=oci.ai_document.models.GeneralProcessorConfig(processor_type="GENERAL", features=[DocumentKeyValueExtractionFeature(feature_type="KEY_VALUE_EXTRACTION", model_id=this_model_id)]))
+                                                
     print("Calling create_processor with create_processor_job_details_text_extraction:", create_processor_job_details_text_extraction)
 
     create_processor_response = aisservice_client.create_processor_job_and_wait_for_state(
@@ -58,16 +75,54 @@ def process_with_oci(file_path):
                                                             output_location.prefix, processor_job.id))
     
     data_dict = json.loads(get_object_response.data.content.decode())
+    
+    result = {}
 
-    result = []
+    if service_type == "Deed Of Trust":
+        docFields = data_dict['pages'][0]['documentFields']
 
-    for p in data_dict['pages']:
-        for l in p['lines']:
-            result.append(l['text'])
+        for d in docFields:
+            print(d["fieldLabel"]["name"], d["fieldValue"]["value"])
+            result[d["fieldLabel"]["name"]] = d["fieldValue"]["value"]
+        
+        print(result)
+    
+    if service_type == "Promissory Note":
+        docFields = data_dict['pages'][0]['documentFields']
+
+        for d in docFields:
+            print(d["fieldLabel"]["name"], d["fieldValue"]["value"])
+            result[d["fieldLabel"]["name"]] = d["fieldValue"]["value"]
+        
+        print(result)
+
+    if service_type == "Closing Checklist":
+        docFields = data_dict['pages'][0]['documentFields']
+
+        for d in docFields:
+            print(d["fieldLabel"]["name"], d["fieldValue"]["value"])
+            result[d["fieldLabel"]["name"]] = d["fieldValue"]["value"]
+        
+        print(result)
+            
+        s = result['Recording Responsibility']
+
+        if "COMPANY" in s:
+            result['Recording Responsibility'] = s.replace("COMPANY", "")
+        
+        result["Jurisdiction"] = result["Property City"] + " " + result["Property State"]
+        result["Complete Property Addresss"] = result["Property Address"] + " " + result["Property City"] + " " + result["Property State"]+ " " + result["Property ZIP"]
+            
+        
+    else:
+        res = []
+        for p in data_dict['pages']:
+            for l in p['lines']:
+                res.append(l['text'])
+        
+        result['text'] = res
 
     return result
-
-
 
     
 
