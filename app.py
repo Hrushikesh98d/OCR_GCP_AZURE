@@ -10,7 +10,7 @@ from google.api_core.exceptions import GoogleAPIError
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.formrecognizer import DocumentAnalysisClient
 
-from oci import process_with_oci
+from oci_backend import process_with_oci
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
@@ -152,7 +152,8 @@ def index():
                 entities = process_document_azure(file_path, model_info)
                 return render_template('results2.html', entities=entities, file_url=f"/uploads/{document_file.filename}")
             elif service_type == 'oci':
-                content = process_with_oci(file_path, service_type)
+                content = process_with_oci(file_path, processor_id)
+                print("content", content)
                 return render_template('results_oci.html', content=content, file_url=f"/uploads/{document_file.filename}")
                 
 

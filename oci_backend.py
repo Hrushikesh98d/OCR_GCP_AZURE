@@ -1,4 +1,4 @@
-import oci 
+import oci
 import uuid
 import base64
 import responses
@@ -47,6 +47,8 @@ def process_with_oci(file_path, service_type):
     
     if service_type == "Deed Of Trust":
         this_model_id = dot_model_id
+    
+    print("service tyoe: ", service_type, this_model_id)
 
     create_processor_job_details_text_extraction = oci.ai_document.models.CreateProcessorJobDetails(
                                                     display_name=str(uuid.uuid4()),
@@ -111,16 +113,7 @@ def process_with_oci(file_path, service_type):
             result['Recording Responsibility'] = s.replace("COMPANY", "")
         
         result["Jurisdiction"] = result["Property City"] + " " + result["Property State"]
-        result["Complete Property Addresss"] = result["Property Address"] + " " + result["Property City"] + " " + result["Property State"]+ " " + result["Property ZIP"]
-            
-        
-    else:
-        res = []
-        for p in data_dict['pages']:
-            for l in p['lines']:
-                res.append(l['text'])
-        
-        result['text'] = res
+        result["Complete Property Addresss"] = result["Property Address"] + " " + result["Property City"] + " " + result["Property State"]+ " " + result["Property ZIP"] 
 
     return result
 
