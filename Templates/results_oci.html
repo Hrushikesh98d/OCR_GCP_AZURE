@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +13,8 @@
             padding: 20px;
         }
 
-        .results-container, .document-container {
+        .results-container,
+        .document-container {
             width: 48%;
             padding: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -23,11 +25,14 @@
             border-collapse: collapse;
         }
 
-        table, th, td {
+        table,
+        th,
+        td {
             border: 1px solid #ccc;
         }
 
-        th, td {
+        th,
+        td {
             padding: 8px;
             text-align: left;
         }
@@ -42,6 +47,7 @@
         }
     </style>
 </head>
+
 <body>
 
 <h1>Processed Entities</h1>
@@ -49,7 +55,22 @@
     <div class="results-container">
         <h2>Results</h2>
         <div class="table-container">
-            {% content %}
+            <table>
+                <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Value</th>
+                </tr>
+                {% for key, value in content.items() %}
+                {% if value is not none %}
+                <tr>
+                    <td>{{ key }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                </thead>
+            </table>
         </div>
     </div>
 
@@ -62,4 +83,5 @@
 <a href="/">Upload another document</a>
 
 </body>
+
 </html>

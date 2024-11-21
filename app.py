@@ -10,6 +10,9 @@ import os
 import mimetypes
 import logging
 
+from oci_service import process_with_oci
+
+
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -38,7 +41,7 @@ azure_models = {
         "key": "e21150cb732846fdb1c5437b5959924a",
         "model_id": "loandocumentationrequest"
     },
-    
+
     "commercial_invoice": {
         "endpoint":"https://commercialinvoice.cognitiveservices.azure.com/",
         "key":"46d0d8c7b69d41ca9522b860e85b14d1",
@@ -127,7 +130,7 @@ def format_data_with_openai(extracted_data):
     """
     Use OpenAI Chat API to format and summarize extracted data.
     """
-    openai.api_key = "Enter_api_key"
+    openai.api_key = "sk-svcacct-wE6OYzsc9F70a4a2BAlPmdVgOITYvQctdLJI9Ik0CuF8lP8QBw_ssW10xYEjeMqhoUpmQxWT3BlbkFJeNV7Yf5i7rGKfKWQaZxqtk3Um52-Dk2bFBavbY8tGflBq44FjsHsNRZyNkgMBZR7wE6EEAA"
 
     messages = [
         {
@@ -241,8 +244,10 @@ def index():
                     entities = process_document_azure(file_path, model_info)
                     return render_template('results2.html', entities=entities, file_url=f"/uploads/{document_file.filename}")
             elif service_type == 'oci':
-                content = process_with_oci(file_path)
+                content = process_with_oci(file_path, processor_id)
+              #  print("content", content)
                 return render_template('results_oci.html', content=content, file_url=f"/uploads/{document_file.filename}")
+
 
     return render_template('index.html')
 
