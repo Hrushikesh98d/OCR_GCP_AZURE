@@ -3,6 +3,8 @@
 ## Author
 **Hrushikesh Dandge**
 
+**Abhiram Rishi Prattipati**
+
 ## About
 
 This web application enables users to upload PDF documents and extract specific information using either Google Document AI or Azure Document Intelligence services. The application supports the processing of various document types such as:
@@ -29,19 +31,20 @@ Both Google and Azure services have been trained to recognize and extract specif
 
 - **Frontend**: HTML, CSS, JavaScript
 - **Backend**: Python (Flask)
-- **Cloud Services**: Google Document AI, Azure Document Intelligence
+- **Cloud Services**: Google Document AI, Azure Document Intelligence, OCI Document Understanding
 - **Document Processing**: Custom processors trained to handle specific document types
 
 ## Installation & Setup
 
 1. Clone the repository to your local machine:
-2. Install the required dependencies:
+2. Create a Python Virtual Environment and activate it. 
+3. Install the required dependencies:
    
-   `pip install -r requirements.txt`
-3. Downlaod the service-account-key.json to your local machine and set up the path in the app.py at line:62
-4. Run the application
+   `pip3 install -r requirements.txt`
+4. Downlaod the service-account-key.json to your local machine and set up the path in the app.py at line:62
+5. Run the application
    `python app.py`
-5. Open your browser and navigate to http://localhost:5000.
+6. Open your browser and navigate to http://localhost:5000.
 
    
 
