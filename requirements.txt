@@ -8,3 +8,4 @@ python-dotenv
 oci
 requests
 responses
+openai
