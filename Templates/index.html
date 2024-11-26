@@ -52,7 +52,7 @@
 
     const ociProcessors = {
         "Promissory Note": "Promissory Note",
-        "Closing Instruction": "Closing Instruction",
+        "Closing Checklist": "Closing Checklist",
         "Deed Of Trust": "Deed Of Trust"
     }
 
@@ -62,14 +62,14 @@
         processorTypeSelect.innerHTML = '';  // Clear previous options
 
         // let processors = serviceType === 'google' ? googleProcessors : azureProcessors;
-        let processors = azureProcessors;
+        let processors = azureProcessors; 
 
         if (serviceType === 'oci') {
-            processors = ociProcessors;
+            processors = ociProcessors; 
         }
 
         if (serviceType === 'google') {
-            processors = googleProcessors;
+            processors = googleProcessors; 
         }
 
         for (const [name, id] of Object.entries(processors)) {

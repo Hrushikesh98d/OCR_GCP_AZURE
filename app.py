@@ -1,3 +1,7 @@
+import os
+import mimetypes
+import logging
+
 from flask import Flask, render_template, request, send_from_directory
 from google.oauth2 import service_account
 from google.cloud import documentai
@@ -6,9 +10,7 @@ from google.api_core.exceptions import GoogleAPIError
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.formrecognizer import DocumentAnalysisClient
 
-import os
-import mimetypes
-import logging
+from oci_backend import process_with_oci
 
 from oci_service import process_with_oci
 
@@ -408,9 +410,8 @@ def index():
                     return render_template('results2.html', entities=entities, file_url=f"/uploads/{document_file.filename}")
             elif service_type == 'oci':
                 content = process_with_oci(file_path, processor_id)
-              #  print("content", content)
+                # print("content", content)
                 return render_template('results_oci.html', content=content, file_url=f"/uploads/{document_file.filename}")
-
 
     return render_template('index.html')
 

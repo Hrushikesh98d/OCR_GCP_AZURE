@@ -1,3 +1,4 @@
 .idea/
 service-account-key.json/
-
+.venv/
+.oci/
