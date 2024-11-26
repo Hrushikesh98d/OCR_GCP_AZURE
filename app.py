@@ -12,9 +12,6 @@ from azure.ai.formrecognizer import DocumentAnalysisClient
 
 from oci_backend import process_with_oci
 
-from oci_service import process_with_oci
-
-
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
